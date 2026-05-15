@@ -1,0 +1,137 @@
+@startuml diagrama-de-classes
+
+skinparam backgroundColor #FFFFFF
+skinparam DefaultFontName Arial
+skinparam DefaultFontSize 12
+
+skinparam ClassBorderColor #185FA5
+skinparam ClassBackgroundColor #E6F1FB
+skinparam ClassHeaderBackgroundColor #185FA5
+skinparam ClassFontColor #FFFFFF
+skinparam ClassFontSize 13
+skinparam ClassFontStyle bold
+skinparam ClassAttributeFontColor #1a1a1a
+skinparam ClassAttributeFontSize 12
+skinparam ClassStereotypeFontColor #FFFFFF
+
+skinparam ArrowColor #185FA5
+skinparam ArrowFontColor #444441
+skinparam ArrowFontSize 11
+
+skinparam NoteBackgroundColor #FAEEDA
+skinparam NoteBorderColor #BA7517
+
+title Sistema de Gestão das Olimpíadas (SGO)\nDiagrama de Classes
+
+' ════════════════════════════════════════
+'  CLASSES
+' ════════════════════════════════════════
+
+class Pais {
+  - id        : int
+  - nome      : String
+  - sigla     : String
+  - ouro      : int
+  - prata     : int
+  - bronze    : int
+  --
+  + adicionarMedalha(tipo : String) : void
+  + getOuro()   : int
+  + getPrata()  : int
+  + getBronze() : int
+}
+
+class Atleta {
+  - id     : int
+  - nome   : String
+  - idade  : int
+  --
+  + inscreverEmCompeticao(c : Competicao) : void
+  + getPais() : Pais
+  + getCompeticoes() : List<Competicao>
+}
+
+class Competicao {
+  - id         : int
+  - modalidade : String
+  - data       : Date
+  - horario    : String
+  - status     : String
+  --
+  + cadastrar() : void
+  + adicionarAtleta(a : Atleta)  : void
+  + alocarLocal(l : Local)       : void
+  + registrarResultado(r : Resultado) : void
+  + getAtletas() : List<Atleta>
+}
+
+class Local {
+  - id         : int
+  - nome       : String
+  - endereco   : String
+  - capacidade : int
+  --
+  + verificarDisponibilidade(data : Date, horario : String) : boolean
+}
+
+class Resultado {
+  - id           : int
+  - dataRegistro : Date
+  --
+  + definirVencedores(ouro : Atleta, prata : Atleta, bronze : Atleta) : void
+  + getOuro()   : Atleta
+  + getPrata()  : Atleta
+  + getBronze() : Atleta
+}
+
+class RelatorioMedalhas {
+  --
+  + gerarPorPais()    : void
+  + exibirRanking()   : void
+}
+
+' ════════════════════════════════════════
+'  ASSOCIAÇÕES
+' ════════════════════════════════════════
+
+' Atleta representa um País (RN2: um país por modalidade)
+Atleta "0..*" --> "1" Pais : representa >
+
+' Competição possui lista de Atletas inscritos (RN1 e RN2)
+Competicao "0..*" -- "0..*" Atleta : inscritos
+
+' Local é alocado para Competição (RN3: um local por vez)
+' Agregação: Local existe independente de Competição
+Competicao "0..*" o-- "0..1" Local : alocado em >
+
+' Competição gera um Resultado (RN4)
+Competicao "1" --> "0..1" Resultado : gera >
+
+' Resultado determina os 3 classificados (RN4)
+Resultado "1" --> "1"    Atleta : ouro >
+Resultado "1" --> "0..1" Atleta : prata >
+Resultado "1" --> "0..1" Atleta : bronze >
+
+' RelatorioMedalhas consulta dados de País (RN5)
+RelatorioMedalhas "1" ..> "0..*" Pais : <<use>>\nconsulta medalhas
+
+' ════════════════════════════════════════
+'  NOTA EXPLICATIVA
+' ════════════════════════════════════════
+note bottom of Atleta
+  RN2: Um atleta representa apenas
+  um país por modalidade.
+  A associação com Competicao garante
+  que modalidades distintas são tratadas
+  como inscrições separadas.
+end note
+
+note right of Local
+  RN3: verificarDisponibilidade()
+  impede conflito de horário.
+  Multiplicidade 0..1 em Competicao
+  indica que um local pode estar
+  sem competição alocada.
+end note
+
+@enduml

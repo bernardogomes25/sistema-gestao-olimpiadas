@@ -1,0 +1,76 @@
+@startuml diagrama-de-caso-de-uso
+
+skinparam backgroundColor #FFFFFF
+skinparam DefaultFontName Arial
+skinparam DefaultFontSize 13
+
+skinparam ActorBorderColor #185FA5
+skinparam ActorBackgroundColor #E6F1FB
+skinparam ActorFontColor #0C447C
+skinparam ActorFontSize 13
+
+skinparam UsecaseBorderColor #185FA5
+skinparam UsecaseBackgroundColor #FFFFFF
+skinparam UsecaseFontColor #1a1a1a
+skinparam UsecaseBorderThickness 1.2
+
+skinparam ArrowColor #444441
+skinparam ArrowFontColor #444441
+skinparam ArrowFontSize 11
+
+skinparam RectangleBorderColor #888780
+skinparam RectangleBorderThickness 1.2
+skinparam RectangleFontColor #444441
+skinparam RectangleFontSize 14
+
+skinparam Padding 12
+skinparam Nodesep 60
+skinparam Ranksep 50
+
+title Sistema de Gestão das Olimpíadas (SGO)\nDiagrama de Caso de Uso
+
+' ── Atores posicionados explicitamente ──────────────
+actor "Administrador"    as ADM   #E6F1FB
+actor "Atleta"           as ATL   #E6F1FB
+actor "Comissão\nTécnica" as CT   #E6F1FB
+
+' ── Fronteira do sistema ─────────────────────────────
+rectangle "Sistema de Gestão das Olimpíadas (SGO)" as SGO {
+
+  usecase "UC1\nCadastrar Competição"      as UC1
+  usecase "UC2\nAlocar Local"              as UC2
+  usecase "UC3\nConsultar Competições"     as UC3
+  usecase "UC4\nInscrever Atleta"          as UC4
+  usecase "UC5\nRegistrar Resultado"       as UC5
+  usecase "UC6\nGerar Relatório\nde Medalhas" as UC6
+
+}
+
+' ── Posicionamento relativo ──────────────────────────
+UC1 -[hidden]down- UC2
+UC2 -[hidden]down- UC3
+UC3 -[hidden]down- UC4
+UC4 -[hidden]down- UC5
+UC5 -[hidden]down- UC6
+
+' ── Associações: Administrador (esquerda) ────────────
+ADM -right-> UC1 : cadastra
+ADM -right-> UC2 : aloca
+ADM -right-> UC3 : consulta
+
+' ── Associações: Atleta (esquerda, abaixo ADM) ───────
+ATL -right-> UC4 : solicita inscrição
+ATL -right-> UC3 : consulta
+
+' ── Associações: Comissão Técnica (direita) ──────────
+CT -left-> UC5 : registra
+CT -left-> UC6 : solicita
+CT -left-> UC3 : consulta
+
+' ── Relações entre casos de uso ──────────────────────
+UC2 .down.> UC3 : <<include>>
+UC4 .down.> UC3 : <<include>>
+UC5 .down.> UC3 : <<include>>
+UC5 .right.> UC6 : <<extend>>
+
+@enduml

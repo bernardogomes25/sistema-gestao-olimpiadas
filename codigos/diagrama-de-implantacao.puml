@@ -1,0 +1,98 @@
+@startuml diagrama-de-implantacao
+
+skinparam backgroundColor #FFFFFF
+skinparam DefaultFontName Arial
+skinparam DefaultFontSize 12
+
+skinparam NodeBorderColor #185FA5
+skinparam NodeBackgroundColor #E6F1FB
+skinparam NodeFontColor #0C447C
+skinparam NodeFontSize 13
+skinparam NodeFontStyle bold
+
+skinparam ArtifactBorderColor #378ADD
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam ArtifactFontColor #1a1a1a
+skinparam ArtifactFontSize 12
+
+skinparam DatabaseBorderColor #3B6D11
+skinparam DatabaseBackgroundColor #EAF3DE
+skinparam DatabaseFontColor #27500A
+skinparam DatabaseFontSize 12
+
+skinparam ComponentBorderColor #378ADD
+skinparam ComponentBackgroundColor #FFFFFF
+skinparam ComponentFontColor #1a1a1a
+skinparam ComponentFontSize 12
+
+skinparam ArrowColor #444441
+skinparam ArrowFontColor #444441
+skinparam ArrowFontSize 11
+
+skinparam RectangleBorderColor #888780
+skinparam RectangleFontColor #444441
+
+title Sistema de Gestão das Olimpíadas (SGO)\nDiagrama de Implantação
+
+' ════════════════════════════════════════
+'  NÓ 1 — Dispositivo do Usuário
+' ════════════════════════════════════════
+node "Dispositivo do Usuário" <<device>> {
+
+  node "Navegador Web" <<executionEnvironment>> {
+    artifact "Frontend SGO\n(HTML / JS / CSS)" as FRONT_WEB
+  }
+
+  node "App Mobile" <<executionEnvironment>> {
+    artifact "SGO Mobile App\n(iOS / Android)" as FRONT_MOB
+  }
+}
+
+' ════════════════════════════════════════
+'  NÓ 2 — Servidor Web
+' ════════════════════════════════════════
+node "Servidor Web" <<device>> {
+  node "Nginx / Apache" <<executionEnvironment>> {
+    artifact "Proxy Reverso\n+ Arquivos Estáticos" as PROXY
+  }
+}
+
+' ════════════════════════════════════════
+'  NÓ 3 — Servidor de Aplicação
+' ════════════════════════════════════════
+node "Servidor de Aplicação" <<device>> {
+  node "JVM / Runtime" <<executionEnvironment>> {
+    artifact "Backend / API SGO" as BACKEND
+
+    component "Módulo de Competições"  as MOD_COMP
+    component "Módulo de Inscrições"   as MOD_INSC
+    component "Módulo de Alocação"     as MOD_ALOC
+    component "Módulo de Resultados"   as MOD_RES
+    component "Módulo de Relatórios"   as MOD_REL
+  }
+}
+
+' ════════════════════════════════════════
+'  NÓ 4 — Servidor de Banco de Dados
+' ════════════════════════════════════════
+node "Servidor de Banco de Dados" <<device>> {
+  node "PostgreSQL 16" <<executionEnvironment>> {
+    database "Banco SGO" as DB_SGO
+  }
+}
+
+' ════════════════════════════════════════
+'  COMUNICAÇÕES
+' ════════════════════════════════════════
+
+' Dispositivo → Servidor Web
+FRONT_WEB  --> PROXY      : <<HTTP/HTTPS>>\nporta 443
+FRONT_MOB  --> PROXY      : <<HTTPS>>\nporta 443
+
+' Servidor Web → Servidor de Aplicação
+PROXY      --> BACKEND    : <<HTTP>>\nrequisições REST\nporta 8080
+
+' Servidor de Aplicação → Banco de Dados
+BACKEND    --> DB_SGO     : <<JDBC / TCP>>\nporta 5432
+
+@enduml

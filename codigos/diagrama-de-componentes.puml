@@ -1,0 +1,107 @@
+@startuml diagrama-de-componentes
+
+skinparam backgroundColor #FFFFFF
+skinparam DefaultFontName Arial
+skinparam DefaultFontSize 12
+
+skinparam ComponentBorderColor #185FA5
+skinparam ComponentBackgroundColor #E6F1FB
+skinparam ComponentFontColor #0C447C
+skinparam ComponentFontSize 13
+skinparam ComponentFontStyle bold
+
+skinparam DatabaseBorderColor #3B6D11
+skinparam DatabaseBackgroundColor #EAF3DE
+skinparam DatabaseFontColor #27500A
+
+skinparam InterfaceBorderColor #854F0B
+skinparam InterfaceBackgroundColor #FAEEDA
+skinparam InterfaceFontColor #633806
+
+skinparam ArrowColor #444441
+skinparam ArrowFontColor #444441
+skinparam ArrowFontSize 11
+
+skinparam RectangleBorderColor #888780
+skinparam RectangleBorderStyle dashed
+skinparam RectangleFontColor #444441
+skinparam RectangleFontSize 13
+
+skinparam NoteBackgroundColor #FAEEDA
+skinparam NoteBorderColor #BA7517
+
+title Sistema de Gestão das Olimpíadas (SGO)\nDiagrama de Componentes
+
+' ════════════════════════════════════════
+'  CAMADA: INTERFACE DE USUÁRIO
+' ════════════════════════════════════════
+rectangle "Interface de Usuário" {
+  [Tela Principal]        as UI_MAIN
+  [Tela de Competições]   as UI_COMP
+  [Tela de Inscrições]    as UI_INSC
+  [Tela de Resultados]    as UI_RES
+  [Tela de Relatórios]    as UI_REL
+}
+
+' ════════════════════════════════════════
+'  CAMADA: API / BACKEND
+' ════════════════════════════════════════
+rectangle "API / Backend" {
+
+  [Módulo de Competições]     as MOD_COMP
+  [Módulo de Inscrições]      as MOD_INSC
+  [Módulo de Alocação]        as MOD_ALOC
+  [Módulo de Resultados]      as MOD_RES
+  [Módulo de Relatórios]      as MOD_REL
+
+  ' Interfaces fornecidas pelos módulos (lollipop)
+  () "ICompetições"  as ICOMP
+  () "IInscrições"   as IINSC
+  () "IAlocação"     as IALOC
+  () "IResultados"   as IRES
+  () "IRelatórios"   as IREL
+
+  MOD_COMP -- ICOMP
+  MOD_INSC -- IINSC
+  MOD_ALOC -- IALOC
+  MOD_RES  -- IRES
+  MOD_REL  -- IREL
+}
+
+' ════════════════════════════════════════
+'  CAMADA: BANCO DE DADOS
+' ════════════════════════════════════════
+database "Banco de Dados\n(SGO DB)" as DB {
+  [Tabela Competições]  as TBL_COMP
+  [Tabela Atletas]      as TBL_ATL
+  [Tabela Locais]       as TBL_LOC
+  [Tabela Resultados]   as TBL_RES
+  [Tabela Países]       as TBL_PAIS
+}
+
+' ════════════════════════════════════════
+'  CONEXÕES: UI → Interfaces requeridas
+' ════════════════════════════════════════
+UI_COMP  ..> ICOMP : <<require>>
+UI_INSC  ..> IINSC : <<require>>
+UI_RES   ..> IRES  : <<require>>
+UI_REL   ..> IREL  : <<require>>
+
+' ════════════════════════════════════════
+'  CONEXÕES: Módulos Backend → Banco
+' ════════════════════════════════════════
+MOD_COMP --> DB : lê / grava competições
+MOD_INSC --> DB : lê / grava inscrições
+MOD_ALOC --> DB : verifica disponibilidade\n(RN3 - conflito de horário)
+MOD_RES  --> DB : grava resultados
+MOD_REL  --> DB : lê dados de medalhas\natualiza medalhas por país
+
+' ════════════════════════════════════════
+'  DEPENDÊNCIAS INTERNAS ENTRE MÓDULOS
+' ════════════════════════════════════════
+MOD_INSC ..> MOD_COMP : <<use>>\nconsulta competições
+MOD_ALOC ..> MOD_COMP : <<use>>\nconsulta horários
+MOD_RES  ..> MOD_INSC : <<use>>\nconsulta atletas inscritos
+MOD_REL  ..> MOD_RES  : <<use>>\nconsulta resultados
+
+@enduml

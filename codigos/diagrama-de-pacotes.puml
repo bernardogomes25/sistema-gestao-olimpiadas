@@ -1,0 +1,71 @@
+@startuml diagrama-de-pacotes
+
+skinparam backgroundColor #FFFFFF
+skinparam DefaultFontName Arial
+skinparam DefaultFontSize 12
+
+skinparam PackageBorderColor #185FA5
+skinparam PackageBackgroundColor #E6F1FB
+skinparam PackageFontColor #0C447C
+skinparam PackageFontSize 14
+skinparam PackageFontStyle bold
+
+skinparam ClassBorderColor #378ADD
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassFontColor #1a1a1a
+skinparam ClassFontSize 12
+skinparam ClassHeaderBackgroundColor #B5D4F4
+
+skinparam ArrowColor #185FA5
+skinparam ArrowFontColor #444441
+skinparam ArrowFontSize 11
+
+title Sistema de Gestão das Olimpíadas (SGO)\nDiagrama de Pacotes
+
+' ════════════════════════════════════════
+'  PACOTES E SEUS CONTEÚDOS
+' ════════════════════════════════════════
+
+package "Interface" <<Layer>> {
+  class TelaPrincipal
+  class TelaCompeticao
+  class TelaInscricao
+  class TelaResultado
+  class TelaRelatorios
+}
+
+package "Controle" <<Layer>> {
+  class CompeticaoController
+  class InscricaoController
+  class AlocacaoController
+  class ResultadoController
+  class RelatorioController
+}
+
+package "Modelo" <<Layer>> {
+  class Competicao
+  class Atleta
+  class Local
+  class Resultado
+  class Pais
+}
+
+package "Persistencia" <<Layer>> {
+  class CompeticaoRepository
+  class AtletaRepository
+  class LocalRepository
+  class ResultadoRepository
+  class PaisRepository
+}
+
+' ════════════════════════════════════════
+'  DEPENDÊNCIAS ENTRE PACOTES
+'  Interface → Controle → Modelo → Persistência
+' ════════════════════════════════════════
+
+Interface  ..> Controle     : <<use>>
+Controle   ..> Modelo       : <<use>>
+Controle   ..> Persistencia : <<use>>
+Modelo     ..> Persistencia : <<use>>
+
+@enduml
