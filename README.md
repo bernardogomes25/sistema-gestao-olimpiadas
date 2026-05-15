@@ -2,7 +2,7 @@
 
 > **Disciplina:** Projeto de Software — Engenharia de Software · PUC Minas  
 > **Professor:** João Paulo Carneiro Aramuni  
-> **Período:** 4º · Turno: Manhã 
+> **Período:** 4º · Turno: Manhã  
 > **Integrantes:** Bernardo Gomes · Pedro Arthur
 
 ---
